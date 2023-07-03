@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import React, { useState } from 'react';
 import { styled, useTheme, Theme, CSSObject } from "@mui/material/styles";
 import MuiDrawer from "@mui/material/Drawer";
 import { SidebarItem } from "./SidebarItem";
@@ -7,7 +7,7 @@ import Divider from "@mui/material/Divider";
 import { ReactComponent as DashboardIcon } from "./icons/dashboardIcon.svg";
 import { ReactComponent as SettingsIcon } from "./icons/settingsIcon.svg";
 import { ReactComponent as ReservationIcon } from "./icons/reservationIcon.svg";
-import { ReactComponent as UsersIcon } from "./icons/usersIcon.svg";
+import { ReactComponent as PermissionsIcon } from "./icons/permissionsIcon.svg";
 import { ReactComponent as RightSizingIcon } from "./icons/rightSizingIcon.svg";
 import { ReactComponent as CompanyLogo } from "./icons/companyLogo.svg";
 import { ReactComponent as CompanyIcon } from "./icons/companyIcon.svg";
@@ -47,37 +47,35 @@ export const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
-
+const buttomSidebarItems = [
+  { 
+    value: "Value 1",
+    icon: <PermissionsIcon/>,
+  },
+  {
+    value: "Value 2",
+    icon: <SettingsIcon/>, 
+  }
+];
 
 const topSidebarItems = [
   {
-    value: "Dashboard",
-    //link: '/dashboard',
+    value: "Page 1",
     icon: <DashboardIcon/>,
+    link: '/page1',
   },
   {
-    value: "VM Reservation",
-    //link: '/vm-reservation',
+    value: "Page 2",
     icon: <ReservationIcon/>,
+    link: '/page2',
   },
   {
-    value: "VM Right-Sizing",
-    //link: '/right-right',
+    value: "Page 3",
     icon: <RightSizingIcon/>,
+    link: '/page3',
   },
-  // {
-  //   name: 'VM Reservation',
-  //   icon: ReservationIcon,
-  //   items: [
-  //     {
-  //       name: 'VM Reservations',
-  //     },
-  //     {
-  //       name: 'View Breakdown',
-  //     },
-  //   ],
-  // },
-]
+];
+
 const Drawer = styled(MuiDrawer, {
   shouldForwardProp: (prop) => prop !== "open",
 })(({ theme, open }) => {
@@ -103,67 +101,56 @@ const Drawer = styled(MuiDrawer, {
   };
 });
 
-interface SidebarProps {
-  //open?: boolean;
-  //setOpen(value: boolean): void;
-}
 
-export const Sidebar: React.FC<SidebarProps> = ({ /*open, setOpen*/ }) => {
+export const Sidebar: React.FC = () => {
   const theme = useTheme();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
+  const [selectedItem, setSelectedItem] = useState<string | null>(null);
 
   const handleDrawerOpen = () => {
     setOpen(true);
   };
+
   const handleDrawerClose = () => {
     setOpen(false);
   };
+
+  const handleSidebarItemClick = (value: string) => {
+    setSelectedItem(value);
+  };
+
   return (
     <Drawer variant="permanent" open={open}>
-    <div style={{backgroundColor: '#172B5F', height: '1.7rem', display: 'flex', justifyContent: 'center'}}>
-    <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={open? handleDrawerClose:handleDrawerOpen}
-            edge="start"
-            // sx={{
-            //   marginRight: 5,
-            // }}
-          >
-            {open? <DoubleArrowsLeftIcon/>: <DoubleArrowsRightIcon/>}
-          </IconButton>
-    </div>
-      <DrawerHeader>
-        {open? <CompanyLogo />: <CompanyIcon/>}
-      </DrawerHeader>
-      <Divider color='#799AD3'/>
+      <div style={{ backgroundColor: "#172B5F", height: "1.7rem", display: "flex", justifyContent: "center" }}>
+        <IconButton color="inherit" aria-label="open drawer" onClick={open ? handleDrawerClose : handleDrawerOpen} edge="start">
+          {open ? <DoubleArrowsLeftIcon /> : <DoubleArrowsRightIcon />}
+        </IconButton>
+      </div>
+      <DrawerHeader>{open ? <CompanyLogo /> : <CompanyIcon />}</DrawerHeader>
+      <Divider color="#799AD3" />
       <List>
-      {topSidebarItems.map((item, index) => (
-        <SidebarItem open={open} {...item} key={index} />
-      ))}
-        {/* <SidebarItem 
-          open={open} 
-          value="Dashboard" 
-          icon={<DashboardIcon />} /> */}
-        {/* <SidebarItem
-          open={open}
-          value="VM Reservation"
-          icon={<ReservationIcon />}
-        />
-        <SidebarItem
-          open={open}
-          value="VM Right-Sizing"
-          icon={<RightSizingIcon />}
-        /> */}
+        {topSidebarItems.map((item, index) => (
+          <SidebarItem
+            open={open}
+            {...item}
+            key={index}
+            selectedItem={selectedItem}
+            handleClick={handleSidebarItemClick}
+          />
+        ))}
       </List>
-      <List
-        sx={{
-          marginTop: "auto", // Pushes the list to the bottom
-        }}
-      >
-        <SidebarItem open={open} value="Permissions" icon={<UsersIcon/>} />
-        <SidebarItem open={open} value="Settings" icon={<SettingsIcon />} />
+      <List sx={{ marginTop: "auto" }}>
+        {buttomSidebarItems.map((item, index) => (
+          <SidebarItem
+            open={open}
+            {...item}
+            key={index}
+            selectedItem={selectedItem}
+            handleClick={handleSidebarItemClick}
+          />
+        ))}
       </List>
     </Drawer>
   );
 };
+
